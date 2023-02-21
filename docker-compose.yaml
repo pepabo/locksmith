@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  image: 
+    build:
+      context: .
+      args:
+        - AWS_TRUST_ANCHOR_ARN=${AWS_TRUST_ANCHOR_ARN}
+        - AWS_PROFILE_ARN=${AWS_PROFILE_ARN}
+        - AWS_ROLE_ARN=${AWS_ROLE_ARN}
+        - AWS_REGION=${AWS_REGION}
+
+
+
+  
+  

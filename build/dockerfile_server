@@ -1,0 +1,14 @@
+FROM alpine:3.17
+
+RUN apk add openssl
+
+RUN mkdir -p /opt/pki/RootCA
+RUN mkdir /opt/pki/configs
+
+COPY config/openssl_client.cnf /opt/pki/RootCA/
+COPY secrets/ca_crt.pem /opt/pki/RootCA/
+COPY secrets/ca_key.pem /opt/pki/RootCA/
+COPY scripts/generate_server.sh .
+
+CMD ["sh", "./generate_server.sh"]
+

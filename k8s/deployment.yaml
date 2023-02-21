@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-aws-testserver
+  labels:
+    app: go-aws-testserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: go-aws-testserver
+  template:
+    metadata:
+      labels:
+        app: go-aws-testserver
+    spec:
+      initContainers:
+        - name: locksmith
+          image: locksmith-image:latest
+          imagePullPolicy: Never
+          command: ["/bin/bash"]
+          args: ["./create_aws_config.sh"]
+          env:
+            - name: AWS_TRUST_ANCHOR_ARN
+              valueFrom:
+                secretKeyRef:
+                  name: aws-config
+                  key: aws-trust-anchor-arn
+            - name: AWS_ROLE_ARN
+              valueFrom:
+                secretKeyRef:
+                  name: aws-config
+                  key: aws-role-arn
+            - name: AWS_PROFILE_ARN
+              valueFrom:
+                secretKeyRef:
+                  name: aws-config
+                  key: aws-profile-arn
+            - name: AWS_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: aws-config
+                  key: aws-region
+          volumeMounts:
+            - name: server-crt
+              mountPath: /opt/pki/server/crt
+            - name: server-key
+              mountPath: /opt/pki/server/key
+            - name: aws-config
+              mountPath: /root/.aws
+            - name: aws-signing-helper
+              mountPath: /opt/locksmith/bin
+      containers:
+        - name: app
+          image: ghcr.io/takutakahashi/go-aws-testserver:latest
+          imagePullPolicy: Never
+          env:
+            - name: AWS_TRUST_ANCHOR_ARN
+              valueFrom:
+                secretKeyRef:
+                  name: aws-config
+                  key: aws-trust-anchor-arn
+            - name: AWS_ROLE_ARN
+              valueFrom:
+                secretKeyRef:
+                  name: aws-config
+                  key: aws-role-arn
+            - name: AWS_PROFILE_ARN
+              valueFrom:
+                secretKeyRef:
+                  name: aws-config
+                  key: aws-profile-arn
+            - name: AWS_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: aws-config
+                  key: aws-region
+            - name: AWS_PROFILE
+              valueFrom:
+                secretKeyRef:
+                  name: aws-config
+                  key: aws-profile
+          volumeMounts:
+            - name: server-crt
+              mountPath: /opt/pki/server/crt
+            - name: server-key
+              mountPath: /opt/pki/server/key
+            - name: aws-config
+              mountPath: /root/.aws
+            - name: aws-signing-helper
+              mountPath: /opt/locksmith/bin
+      volumes:
+        - name: server-crt
+          secret:
+            secretName: tls-secret
+            items:
+            - key: tls.crt
+              path: server_crt.pem
+        - name: server-key
+          secret:
+            secretName: tls-secret
+            items:
+            - key: tls.key
+              path: server_key.pem
+        - name: aws-config
+          emptyDir: {}
+        - name: aws-signing-helper
+          emptyDir: {}
