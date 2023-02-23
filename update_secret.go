@@ -10,7 +10,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/util/retry"
 	"k8s.io/client-go/tools/clientcmd"
-	// "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/api/errors"
 
 	v1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -22,13 +22,16 @@ func getk8sSecretClient() coreV1Types.SecretInterface {
 
 	kc := os.Getenv("HOME") + "/.kube/config"
 	c, err := clientcmd.BuildConfigFromFlags("", kc)
+
 	if err != nil {
 		fmt.Printf("config building failed: %v\n", err.Error())
 	}
+
 	nc, err := kubernetes.NewForConfig(c) 
 	if err != nil {
 		fmt.Printf("creating new config failed: %v\n", err.Error())
 	}
+
 	sc := nc.CoreV1().Secrets("default")
 	return sc
 }
@@ -60,10 +63,9 @@ func main() {
 		fmt.Println("failed to decode PEM block containing private key")
 	}
 
+	sc := getk8sSecretClient()
 	cert := base64.StdEncoding.EncodeToString(cblock.Bytes)
 	key := base64.StdEncoding.EncodeToString(kblock.Bytes)
-
-	sc := getk8sSecretClient()
 
 	// Retry updating secret until you no longer get a conflict error. 
 	// This way, you can preserve changes made by other clients between.
@@ -72,7 +74,8 @@ func main() {
 		s, getErr := sc.Get(context.TODO(), "tls-secret", metaV1.GetOptions{})
 
 		// If secret "tls-secret" is not found
-		if getErr != nil {
+		if errors.IsNotFound(getErr) {
+
 			sd := make(map[string]string)
 			sd["tls.crt"] = cert
 			sd["tls.key"] = key
@@ -108,5 +111,4 @@ func main() {
 		fmt.Printf("Update failed: %v\n", retryErr)
 	}
 	fmt.Println("Secret tls-secret is successfully updated")
-
 }
