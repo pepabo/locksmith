@@ -92,6 +92,11 @@ func main() {
 			return createErr
 		}
 
+		// If you forget to add this statement, you will get an error (panic: assignment to entry in nil map)
+		if s.StringData == nil {
+			s.StringData = map[string]string{}
+		}
+
 		s.StringData["tls.crt"] = cert
 		s.StringData["tls.key"] = key
 
