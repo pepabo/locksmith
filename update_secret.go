@@ -8,6 +8,8 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/util/retry"
 	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/apimachinery/pkg/api/errors"
+
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	coreV1Types "k8s.io/client-go/kubernetes/typed/core/v1"
 )
@@ -32,7 +34,7 @@ func main() {
 
 	cp := flag.String("cert-path", "./build/secrets/server_crt.pem", "The path to your end-entity certificate")
 	kp := flag.String("key-path", "./build/secrets/server_key.pem", "The path to your end-entity private key")
-    flag.Parse()
+  flag.Parse()
 
 	cert, err := os.ReadFile(*cp)
 	if err != nil {
@@ -51,11 +53,15 @@ func main() {
 	// Ref: https://github.com/kubernetes/client-go/blob/master/examples/create-update-delete-deployment/main.go
 	retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
 		s, getErr := sc.Get(context.TODO(), "tls-secret", metaV1.GetOptions{})
-		if getErr != nil {
+
+		// If secret "tls-secret" is not found
+		if errors.IsNotFound(getErr) {
 			panic(fmt.Errorf("Failed to get latest version of secret tls-secret: %v", getErr))
 		}
+
 		s.Data["tls.crt"] = []byte(cert)
 		s.Data["tls.key"] = []byte(key)
+		fmt.Println(s)
 
 		_, updateErr := sc.Update(context.TODO(), s, metaV1.UpdateOptions{})
 		return updateErr
