@@ -81,7 +81,7 @@ func main() {
 			sd["tls.key"] = key
 
 			s_ := &v1.Secret{
-				Type: "kubernetes.io/tls",
+				Type: v1.SecretTypeTLS,
 				ObjectMeta: metaV1.ObjectMeta{
 					Name: "tls-secret",
 					Namespace: "default",
