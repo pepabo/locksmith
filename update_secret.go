@@ -18,7 +18,7 @@ import (
 )
 
 
-func getk8sSecretClient() coreV1Types.SecretInterface {
+func getk8sSecretClient(namespace string) coreV1Types.SecretInterface {
 
 	kc := os.Getenv("HOME") + "/.kube/config"
 	c, err := clientcmd.BuildConfigFromFlags("", kc)
@@ -32,7 +32,7 @@ func getk8sSecretClient() coreV1Types.SecretInterface {
 		log.Fatalf("creating new config failed: %v\n", err.Error())
 	}
 
-	sc := nc.CoreV1().Secrets("default")
+	sc := nc.CoreV1().Secrets(namespace)
 	return sc
 }
 
@@ -41,6 +41,7 @@ func main() {
 
 	cp := flag.String("cert-path", "./build/secrets/server_crt.pem", "The path to your end-entity certificate")
 	kp := flag.String("key-path", "./build/secrets/server_key.pem", "The path to your end-entity private key")
+	ns := flag.String("namespace", "default", "The name of your namespace")
   flag.Parse()
 
 	cpem, err := os.ReadFile(*cp)
@@ -63,7 +64,7 @@ func main() {
 		log.Fatal("failed to decode PEM block containing private key")
 	}
 
-	sc := getk8sSecretClient()
+	sc := getk8sSecretClient(*ns)
 	cert := string(cpem)
 	key := string(kpem)
 
@@ -84,7 +85,7 @@ func main() {
 				Type: v1.SecretTypeTLS,
 				ObjectMeta: metaV1.ObjectMeta{
 					Name: "tls-secret",
-					Namespace: "default",
+					Namespace: *ns,
 				},
 				StringData: sd,
 			}
