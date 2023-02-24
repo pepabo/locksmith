@@ -6,7 +6,6 @@ import (
 	"flag"
 	"context"
 	"encoding/pem"
-	"encoding/base64"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/util/retry"
 	"k8s.io/client-go/tools/clientcmd"
@@ -64,8 +63,8 @@ func main() {
 	}
 
 	sc := getk8sSecretClient()
-	cert := base64.StdEncoding.EncodeToString(cblock.Bytes)
-	key := base64.StdEncoding.EncodeToString(kblock.Bytes)
+	cert := string(cpem)
+	key := string(kpem)
 
 	// Retry updating secret until you no longer get a conflict error. 
 	// This way, you can preserve changes made by other clients between.
