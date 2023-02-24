@@ -2,7 +2,7 @@ package main
 
 import (
 	"os"
-	"fmt"
+	"log"
 	"flag"
 	"context"
 	"encoding/pem"
@@ -23,12 +23,12 @@ func getk8sSecretClient() coreV1Types.SecretInterface {
 	c, err := clientcmd.BuildConfigFromFlags("", kc)
 
 	if err != nil {
-		fmt.Printf("config building failed: %v\n", err.Error())
+		log.Fatalf("config building failed: %v\n", err.Error())
 	}
 
 	nc, err := kubernetes.NewForConfig(c) 
 	if err != nil {
-		fmt.Printf("creating new config failed: %v\n", err.Error())
+		log.Fatalf("creating new config failed: %v\n", err.Error())
 	}
 
 	sc := nc.CoreV1().Secrets("default")
@@ -44,22 +44,22 @@ func main() {
 
 	cpem, err := os.ReadFile(*cp)
 	if err != nil {
-    	fmt.Printf("failed to read certificate: %v\n", err.Error())
+    	log.Fatalf("failed to read certificate: %v\n", err.Error())
   } 
 
 	kpem, err := os.ReadFile(*kp)
 	if err != nil {
-			fmt.Printf("failed to parse private key: %v\n", err.Error())
+			log.Fatalf("failed to parse private key: %v\n", err.Error())
 	}
 
 	cblock, _ := pem.Decode(cpem)
 	if cblock == nil || cblock.Type != "CERTIFICATE" {
-		fmt.Println("failed to decode PEM block containing certificate")
+		log.Fatal("failed to decode PEM block containing certificate")
 	}
 
 	kblock, _ := pem.Decode(kpem)
 	if kblock == nil || kblock.Type != "PRIVATE KEY" {
-		fmt.Println("failed to decode PEM block containing private key")
+		log.Fatal("failed to decode PEM block containing private key")
 	}
 
 	sc := getk8sSecretClient()
@@ -90,7 +90,7 @@ func main() {
 
 			_, createErr := sc.Create(context.TODO(), s_, metaV1.CreateOptions{})
 			if createErr != nil {
-				fmt.Printf("Update failed: %v\n", createErr)
+				log.Fatalf("Update failed: %v\n", createErr)
 			}
 			return createErr
 		}
@@ -108,7 +108,7 @@ func main() {
 	})
 
 	if retryErr != nil {
-		fmt.Printf("Update failed: %v\n", retryErr)
+		log.Fatalf("Update failed: %v\n", retryErr)
 	}
-	fmt.Println("Secret tls-secret is successfully updated")
+	log.Fatal("Secret tls-secret is successfully updated")
 }
