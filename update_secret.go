@@ -42,7 +42,7 @@ func main() {
 	cp := flag.String("cert-path", "./build/secrets/server_crt.pem", "The path to your end-entity certificate")
 	kp := flag.String("key-path", "./build/secrets/server_key.pem", "The path to your end-entity private key")
 	ns := flag.String("namespace", "default", "Your namespace")
-	sn := flag.String("name", "tls-secret", "Your secret name")
+	sn := flag.String("secret-name", "tls-secret", "Your secret name")
   flag.Parse()
 
 	cpem, err := os.ReadFile(*cp)
