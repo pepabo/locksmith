@@ -41,7 +41,8 @@ func main() {
 
 	cp := flag.String("cert-path", "./build/secrets/server_crt.pem", "The path to your end-entity certificate")
 	kp := flag.String("key-path", "./build/secrets/server_key.pem", "The path to your end-entity private key")
-	ns := flag.String("namespace", "default", "The name of your namespace")
+	ns := flag.String("namespace", "default", "Your namespace")
+	sn := flag.String("name", "tls-secret", "Your secret name")
   flag.Parse()
 
 	cpem, err := os.ReadFile(*cp)
@@ -72,7 +73,7 @@ func main() {
 	// This way, you can preserve changes made by other clients between.
 	// Ref: https://github.com/kubernetes/client-go/blob/master/examples/create-update-delete-deployment/main.go
 	retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
-		s, getErr := sc.Get(context.TODO(), "tls-secret", metaV1.GetOptions{})
+		s, getErr := sc.Get(context.TODO(), *sn, metaV1.GetOptions{})
 
 		// If secret "tls-secret" is not found
 		if errors.IsNotFound(getErr) {
@@ -84,7 +85,7 @@ func main() {
 			s_ := &v1.Secret{
 				Type: v1.SecretTypeTLS,
 				ObjectMeta: metaV1.ObjectMeta{
-					Name: "tls-secret",
+					Name: *sn,
 					Namespace: *ns,
 				},
 				StringData: sd,
