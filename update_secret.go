@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"log"
+	"fmt"
 	"flag"
 	"context"
 	"encoding/pem"
@@ -110,5 +111,6 @@ func main() {
 	if retryErr != nil {
 		log.Fatalf("Update failed: %v\n", retryErr)
 	}
-	log.Fatal("Secret tls-secret is successfully updated")
+	fmt.Println("Secret tls-secret is successfully updated")
+	os.Exit(0)
 }
