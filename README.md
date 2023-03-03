@@ -12,3 +12,12 @@ cd locksmith/build
 chmod +x ./create_secret_ca.sh
 ./create_secret_ca.sh
 ```
+### Create your own server certificate and private key
+- Your new server certificate is stored in locksmith/build/secrets/server_crt.pem
+- Your new server private key is stored in locksmith/build/secrets/server_key.pem
+
+```
+cd locksmith/build
+chmod +x ./create_secret_server.sh
+./create_secret_server.sh
+```
