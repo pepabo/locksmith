@@ -21,3 +21,15 @@ cd locksmith/build
 chmod +x ./create_secret_server.sh
 ./create_secret_server.sh
 ```
+
+### Create a trustanchor on AWS
+
+### Create a special IAM role on AWS
+
+### Create an AWS profile on AWS
+
+### Create a docker image for locksmith
+
+### Add locksmith to your manifest file
+
+### Run your deployment on your k8s cluster
