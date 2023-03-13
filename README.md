@@ -32,6 +32,7 @@ chmod +x ./create_secret_server.sh
 
 
 #### 3. Create a special IAM role for IAM Roles Anywhere
+`rolesanywhere-trust-policy.json`
 ```
 {
     "Version": "2012-10-17",
