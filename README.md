@@ -31,7 +31,25 @@ chmod +x ./create_secret_server.sh
 ![create-trust-anchor](/images/create-trust-anchor.png)
 
 
-#### Create a special IAM role on AWS
+#### Create a special IAM role for IAM Roles Anywhere
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "rolesanywhere.amazonaws.com"
+            },
+            "Action": [
+                "sts:AssumeRole",
+                "sts:SetSourceIdentity",
+                "sts:TagSession"
+            ]
+        }
+    ]
+}
+```
 
 
 #### Create an AWS profile on AWS
