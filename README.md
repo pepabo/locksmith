@@ -51,11 +51,12 @@ chmod +x ./create_secret_server.sh
 }
 ```
 
+#### 4. Create an AWS role(s) that you are planning to assume
 
-#### 4. Create an AWS profile on AWS
+#### 5. Create an AWS profile on AWS
 
-#### 5. Create a docker image for locksmith
+#### 6. Create a docker image for locksmith
 
-#### 6. Add locksmith to your manifest file
+#### 7. Add locksmith to your manifest file
 
-#### 7. Run your deployment on your k8s cluster
+#### 8. Run your deployment on your k8s cluster
