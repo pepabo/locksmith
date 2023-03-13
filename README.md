@@ -58,12 +58,18 @@ chmod +x ./create_secret_server.sh
 ![profile](/images/profile.png)
 
 #### 6. Create a docker image for locksmith
+
+##### 6.1 Execute commands reuired for building the docker image 
 ```
 cd locksmith
 export AWS_TRUST_ANCHOR_ARN=(ARN for your trust anchor)
 export AWS_PROFILE_ARN=(ARN for your AWS profile)
 export AWS_ROLE_ARN=(ARN for the AWS role that you are going to assume)
 export AWS_REGION=(your AWS region)
+```
+
+##### 6.2 Build your docker image
+```
 docker compose up -d
 ```
 
