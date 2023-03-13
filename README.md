@@ -51,12 +51,38 @@ chmod +x ./create_secret_server.sh
 }
 ```
 
-#### 4. Create an AWS role(s) that you are planning to assume
+#### 4. Create an AWS role that you are planning to assume
 
 #### 5. Create an AWS profile on AWS
+![profile](/images/profile.png)
 
 #### 6. Create a docker image for locksmith
+```
+cd locksmith
+export AWS_TRUST_ANCHOR_ARN=(ARN for your trust anchor)
+export AWS_PROFILE_ARN=(ARN for your AWS profile)
+export AWS_ROLE_ARN=(ARN for the AWS role that you are going to assume)
+export AWS_REGION=(your AWS region)
+docker compose up -d
+```
 
-#### 7. Add locksmith to your manifest file
+#### 7. Create k8s secret for server certificate and private key
+```
+kubectl create secret tls tls-secret \
+  --cert=(path to your server certificate) \
+  --key=(path to your private key)
+```
 
-#### 8. Run your deployment on your k8s cluster
+#### 6. Create k8s secret for AWS ARNS
+```
+kubectl create secret generic aws-config \
+        --from-literal="aws-trust-anchor-arn=$AWS_TRUST_ANCHOR_ARN" \
+        --from-literal="aws-profile-arn=$AWS_PROFILE_ARN" \
+        --from-literal="aws-role-arn=$AWS_ROLE_ARN" \
+        --from-literal="aws-region=$AWS_REGION"
+```
+
+#### 8. Add locksmith to your manifest file
+See an [example](k8s/deployment.yaml) 
+
+#### 9. Run your deployment on your k8s cluster
