@@ -31,7 +31,7 @@ chmod +x ./create_secret_server.sh
 ![create-trust-anchor](/images/create-trust-anchor.png)
 
 
-#### Create a special IAM role for IAM Roles Anywhere
+#### 3. Create a special IAM role for IAM Roles Anywhere
 ```
 {
     "Version": "2012-10-17",
@@ -52,10 +52,10 @@ chmod +x ./create_secret_server.sh
 ```
 
 
-#### Create an AWS profile on AWS
+#### 4. Create an AWS profile on AWS
 
-#### Create a docker image for locksmith
+#### 5. Create a docker image for locksmith
 
-#### Add locksmith to your manifest file
+#### 6. Add locksmith to your manifest file
 
-#### Run your deployment on your k8s cluster
+#### 7. Run your deployment on your k8s cluster
