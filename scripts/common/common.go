@@ -5,9 +5,9 @@ import (
 	"log"
 	"fmt"
 	"context"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/util/retry"
-	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/apimachinery/pkg/api/errors"
 
 	v1 "k8s.io/api/core/v1"
@@ -18,20 +18,18 @@ import (
 
 func getk8sSecretClient(namespace string) coreV1Types.SecretInterface {
 
-	kc := os.Getenv("HOME") + "/.kube/config"
-	c, err := clientcmd.BuildConfigFromFlags("", kc)
-
+	config, err := rest.InClusterConfig()
 	if err != nil {
-		log.Fatalf("config building failed: %v\n", err.Error())
+		log.Fatalf("Failed to get config: %v\n", err.Error())
 	}
 
-	nc, err := kubernetes.NewForConfig(c) 
+	nc, err := kubernetes.NewForConfig(config)
 	if err != nil {
-		log.Fatalf("creating new config failed: %v\n", err.Error())
+		log.Fatalf("Failed to create a new clientset: %v\n", err.Error())
 	}
-
 	sc := nc.CoreV1().Secrets(namespace)
 	return sc
+
 }
 
 
@@ -85,7 +83,7 @@ func Updatek8sSecret(namespace string, secretname string, cpem []byte, kpem []by
 	if retryErr != nil {
 		log.Fatalf("Update failed: %v\n", retryErr)
 	}
-	
+
 	fmt.Println("Secret tls-secret is successfully updated")
 	os.Exit(0)
 
